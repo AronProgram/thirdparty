@@ -5,3 +5,9 @@
 	path = jsoncpp
 	url = https://github.com/open-source-parsers/jsoncpp.git
 
+[submodule "random"]
+	path = random
+	url = https://github.com/effolkronium/random.git
+[submodule "mysqlpp"]
+	path = mysqlpp
+	url = https://github.com/tangentsoft/mysqlpp.git
