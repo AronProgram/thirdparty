@@ -13,3 +13,6 @@
 [submodule "rapidjson"]
 	path = rapidjson
 	url = https://github.com/open-source-parsers/rapidjson.git
+[submodule "jsoncpp-Sandbox/jsoncpp"]
+	path = jsoncpp-Sandbox/jsoncpp
+	url = https://github.com/open-source-parsers/jsoncpp.git
