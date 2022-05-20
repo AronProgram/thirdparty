@@ -1,10 +1,6 @@
 [submodule "TarsCpp"]
 	path = TarsCpp
 	url = https://github.com/TarsCloud/TarsCpp.git
-[submodule "jsoncpp"]
-	path = jsoncpp
-	url = https://github.com/open-source-parsers/jsoncpp.git
-
 [submodule "random"]
 	path = random
 	url = https://github.com/effolkronium/random.git
