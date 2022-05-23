@@ -16,3 +16,18 @@
 [submodule "jsoncpp-Sandbox/jsoncpp"]
 	path = jsoncpp-Sandbox/jsoncpp
 	url = https://github.com/open-source-parsers/jsoncpp.git
+[submodule "cpr"]
+	path = cpr
+	url = https://github.com/libcpr/cpr.git
+[submodule "hiredis"]
+	path = hiredis
+	url = https://github.com/redis/hiredis.git
+[submodule "redis-plus-plus"]
+	path = redis-plus-plus
+	url = https://github.com/sewenew/redis-plus-plus.git
+[submodule "IXWebSocket"]
+	path = IXWebSocket
+	url = https://github.com/machinezone/IXWebSocket.git
+[submodule "tinyxml2"]
+	path = tinyxml2
+	url = https://github.com/leethomason/tinyxml2.git
