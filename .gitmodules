@@ -4,9 +4,6 @@
 [submodule "random"]
 	path = random
 	url = https://github.com/effolkronium/random.git
-[submodule "mysqlpp"]
-	path = mysqlpp
-	url = https://github.com/tangentsoft/mysqlpp.git
 [submodule "fmt"]
 	path = fmt
 	url = https://github.com/fmtlib/fmt.git
