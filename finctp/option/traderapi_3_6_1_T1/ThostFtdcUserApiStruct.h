@@ -5135,8 +5135,6 @@ struct CThostFtdcCombActionField
 	TThostFtdcInvestUnitIDType	InvestUnitID;
 	///所有者类型
 	TThostFtdcOwnerTypeType	OwnerType;
-	///操作时间
-	TThostFtdcTimeType	ActionTime;
 };
 
 ///申请组合查询
@@ -5199,8 +5197,6 @@ struct CThostFtdcExchangeCombActionField
 	TThostFtdcBranchIDType	BranchID;
 	///所有者类型
 	TThostFtdcOwnerTypeType	OwnerType;
-	///操作时间
-	TThostFtdcTimeType	ActionTime;
 };
 
 ///交易所申请组合查询
@@ -11539,32 +11535,6 @@ struct CThostFtdcExchangeExecCombineOrderActionErrorField
 	TThostFtdcErrorIDType	ErrorID;
 	///错误信息
 	TThostFtdcErrorMsgType	ErrorMsg;
-};
-
-///投资者程序化标识
-struct CThostFtdcInvestorProgrammingTypeField
-{
-	///经纪公司代码
-	TThostFtdcBrokerIDType	BrokerID;
-	///投资者代码
-	TThostFtdcInvestorIDType	InvestorID;
-	///交易所代码
-	TThostFtdcExchangeIDType	ExchangeID;
-	///投资者程序化标志
-	TThostFtdcInvestorProgrammingTypeType	InvestorProgrammingType;
-	///投资者客户端
-	TThostFtdcClientNameType	Client;
-};
-
-///查询投资者程序化标识
-struct CThostFtdcQryInvestorProgrammingTypeField
-{
-	///经纪公司代码
-	TThostFtdcBrokerIDType	BrokerID;
-	///投资者代码
-	TThostFtdcInvestorIDType	InvestorID;
-	///交易所代码
-	TThostFtdcExchangeIDType	ExchangeID;
 };
 
 ///资金内转输入
