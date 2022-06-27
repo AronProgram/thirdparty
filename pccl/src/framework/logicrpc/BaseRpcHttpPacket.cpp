@@ -38,41 +38,60 @@ BaseRpcHttpPacket::~BaseRpcHttpPacket()
 	
 }
 
+void	BaseRpcHttpPacket::reset()
+{
+	_route = "";
+	_text  = "";
+	_params.clear();
+	_document.clear();
+}
 
-int BaseRpcHttpPacket::parse(std::vector<char>& buffer)
+
+int BaseRpcHttpPacket::decodePacket(const std::vector<char>& buffer)
 {	
 
-	// http packet
-	tars::TC_HttpRequest packet;
-	
-	bool status = packet.decode(  (const char*) &buffer[0] , buffer.size() );
-	if ( !status )
+	try
 	{
-		TLOGERROR( "parse http packet error" << std::endl );
-		return pccl::STATE_ERROR;  
-	}
+		// packet
+		_text.insert(_text.begin(), buffer.begin(),buffer.end());
+
+		// http packet
+		tars::TC_HttpRequest packet;		
 		
-	// 路由
-	_route               = packet.getRequest();	
-	parseUrlBody(_route);
+		bool status = packet.decode( buffer );
+		if ( !status )
+		{
+			TLOGERROR( "parse http packet error,packet:" << _text << std::endl );
+			return pccl::STATE_ERROR;  
+		}
+			
+		// 路由
+		_route               = packet.getRequest();	
+		parseUrlBody(_route);	
 
-	// content type
-	std::string type     = packet.getContentType();
-	
-	//body
-	std::string& content = packet.getContent();
-	
-	// json
-	if ( type.find("application/json") )
-	{
-		return parseJsonBody( content );
+		// content type
+		std::string type     = packet.getContentType();
+		
+		//body
+		std::string& content = packet.getContent();
+		
+		// json
+		if ( type.find("application/json") )
+		{
+			return parseJsonBody( content );
+		}
+		
+		//解析http query stirng 的参数
+		parseUrlBody(content);		
+		
+		return pccl::STATE_SUCCESS;
+
 	}
-	
-
-	//解析http query stirng 的参数
-	parseUrlBody(content);
-	
-	return pccl::STATE_SUCCESS;
+	catch(std::exception& e )
+	{
+		TLOGERROR("packet http packet error, exception:" << e.what() << ",packet:" << _text << std::endl );
+		return pccl::STATE_ERROR;
+	}
 }
 
 

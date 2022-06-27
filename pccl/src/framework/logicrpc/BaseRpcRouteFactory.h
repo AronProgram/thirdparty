@@ -27,7 +27,7 @@ namespace pccl
 
 
 
-template<class RpcPacket >
+template<typename RpcPacket >
 class RegisterRouteHandlerFactory
 {
 

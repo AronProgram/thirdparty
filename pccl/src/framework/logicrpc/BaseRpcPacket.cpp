@@ -36,7 +36,13 @@ BaseRpcPacket::~BaseRpcPacket()
 
 }
 
-int BaseRpcPacket::parse(std::vector<char>& buffer)
+void	BaseRpcPacket::reset()
+{
+
+}
+
+
+int BaseRpcPacket::decodePacket(const std::vector<char>& buffer)
 {
 	return pccl::STATE_SUCCESS;
 }

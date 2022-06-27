@@ -108,7 +108,7 @@ bool BaseRpcRoute::hasMethod(const std::string& sRoute)
 int  BaseRpcRoute::doRoute(const std::string& sRoute )
 {	
 
-	TLOGINFO("doRoute, exec route:" << sRoute << std::endl );
+	TLOG_INFO("doRoute, exec route:" << sRoute << std::endl );
 
 	EXEC_PARAM& exec = _route[sRoute];
 	int result       = exec.call();	
