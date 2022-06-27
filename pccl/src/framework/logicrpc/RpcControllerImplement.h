@@ -68,7 +68,7 @@ public:
 		try
 		{
 			_controller.reset();
-			_controller.setBuffer( (std::vector<char>*)&inBuffer,&outBuffer);
+			_controller.setInOut( (std::vector<char>*)&inBuffer, &outBuffer );
 			int result = _controller.doProcess();
 			
 			TLOGDEBUG( "[PCCL] RpcApi result:" << result << ",response outBuffer size:" << outBuffer.size() << std::endl );

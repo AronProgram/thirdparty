@@ -21,6 +21,6 @@ include("${PROJECT_SOURCE_DIR}/cmake/Common.cmake")
 ####################################################
 
 add_subdirectory(src)
-add_subdirectory(example)
+#add_subdirectory(example)
 
 

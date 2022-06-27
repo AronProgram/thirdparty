@@ -49,7 +49,8 @@ public:
         HTTP_REQUEST_HEAD,
         HTTP_REQUEST_PUT,
         HTTP_REQUEST_DELETE,
-        HTTP_REQUEST_PATCH,		
+        HTTP_REQUEST_PATCH,	
+        HTTP_REQUEST_ANY,
 
 		// oterh protocol
     	NONE_ROUTE_TYPE       = 100,

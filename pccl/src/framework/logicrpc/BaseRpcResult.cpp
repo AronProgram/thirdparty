@@ -27,7 +27,7 @@ namespace pccl
 {
 
 
-BaseRpcResult::BaseRpcResult()
+BaseRpcResult::BaseRpcResult():_sequence(""),_response("")
 {
 	reset();
 }

@@ -34,7 +34,8 @@ public:
 	~BaseRpcHttpPacket();
 
 public:
-	virtual  int   					parse(std::vector<char>& buffer)  ;
+	virtual  void                   reset();
+	virtual  int   				    decodePacket(const std::vector<char>& buffer)  ;
 	virtual std::string&  			getRoute(void)    ;	
 	virtual REQUEST_PARAMS&        	getParams(void)    ;
 	virtual Json::Value&        	getDocument(void)    ;
@@ -49,6 +50,7 @@ private:
 	std::string       _route;
 	REQUEST_PARAMS    _params;
 	Json::Value       _document;
+	std::string       _text;
 	
 
 };

@@ -27,42 +27,34 @@
 namespace pccl
 {
 
-template<class RpcPacket >
+template<typename RpcPacket >
 class BaseRpcApiHandler: public BaseRpcResult
 {
 public:
 	/*
 	* 构造函数
 	*/
-	BaseRpcApiHandler(void):        _pBase(NULL) { }
+	BaseRpcApiHandler(void);
 	
     /**
      * 析构函数
      **/
-    virtual ~BaseRpcApiHandler(void) { }
+    virtual ~BaseRpcApiHandler(void);
 
 
 	/**
 	* 重置
 	*/
-	virtual void reset()	
-	{ 
-		_pBase = NULL;
-		BaseRpcResult::reset();
-	}
+	virtual void reset();
 	
 	
  	
-	void  setBasePointer(BaseRpcController<RpcPacket>* pBase)
-	{
-		_pBase =  pBase;
-	}
+	void  setBasePointer(BaseRpcController<RpcPacket>* pBase);
+	 
 	
 
-	BaseRpcController<RpcPacket>&  getBasePointerRef()
-	{
-		return *_pBase;
-	}
+	BaseRpcController<RpcPacket>&  getBasePointerRef();
+	 
 	
 	
 
@@ -71,46 +63,29 @@ public:
 	* 业务逻辑处理入口 
 	* 
 	*/
-	virtual int  doProcessApi(void)
-	{
-		
-		return pccl::STATE_SUCCESS;				
-	
-	}
-	
+	virtual int  doProcessApi(void);
+	 
 
 protected:
 	/**
 	*  检查参数
 	**/
-	virtual int  doCheckParams(void)
-	{
-		return pccl::STATE_SUCCESS;		
-	}
+	virtual int  doCheckParams(void);
+	 
 	
 
 	/**
 	* 业务处理
 	**/
-	virtual int  doProcessWork(void)
-	{
-		return pccl::STATE_SUCCESS;		
-	}
+	virtual int  doProcessWork(void);
+	 
 
 
 	/**
 	*	输出
 	*/
-	virtual void doProcessEnd(void)	
-	{
-		std::vector<char>& buffer	= _pBase->getOutBuffer();
-		const std::string& response = getResponse();
-		
-		buffer.clear();
-		buffer.resize( response.length() );
-		memcpy( buffer.data(), response.c_str(), response.length() );		
-	}
-
+	virtual void doProcessEnd(void);
+	
 	
 	
 protected:
@@ -118,26 +93,97 @@ protected:
 
 };
 
-template<class RpcPacket >
-class BaseRpcHttpApiHandler: public BaseRpcApiHandler<RpcPacket>
+template<typename RpcPacket > 
+BaseRpcApiHandler<RpcPacket>::BaseRpcApiHandler(void):        _pBase(NULL)
 {
-public:
-	/*
-	* 构造函数
-	*/
-	BaseRpcHttpApiHandler(void);
+
+}
+
+template<typename RpcPacket >
+BaseRpcApiHandler<RpcPacket>::~BaseRpcApiHandler(void) 
+{ 
+
+}
+
+template<typename RpcPacket >
+void BaseRpcApiHandler<RpcPacket>::reset()	
+{ 
+	BaseRpcResult::reset();
+	_pBase = NULL;
+}
+
+
+template<typename RpcPacket >
+void  BaseRpcApiHandler<RpcPacket>::setBasePointer(BaseRpcController<RpcPacket>* pBase)
+{
+	_pBase =  pBase;
+}
+
+template<typename RpcPacket >
+BaseRpcController<RpcPacket>&  BaseRpcApiHandler<RpcPacket>::getBasePointerRef()
+{
+	return *_pBase;
+}
 	
-    /**
-     * 析构函数
-     **/
-    virtual ~BaseRpcHttpApiHandler(void);
+
+
+template<typename RpcPacket >
+int   BaseRpcApiHandler<RpcPacket>::doProcessApi(void)
+{
+	
+
+	int result = pccl::STATE_SUCCESS;
+
+	result = doCheckParams();
+	if ( pccl::STATE_SUCCESS != result )
+	{	
+		this->error((int)BaseErrorCode::PARAMS_ERROR );
+		doProcessEnd(); 
+		return pccl::STATE_ERROR;
+	}
 
 	
+	result = doProcessWork();
+	if ( pccl::STATE_SUCCESS != result )
+	{
+		this->error( (int)BaseErrorCode::SERVER_ERROR );
+		doProcessEnd(); 
+		return pccl::STATE_ERROR;
+	}
 
-public:
+	doProcessEnd();	
+
+	return result;	
+
+}
+
+
+
+template<typename RpcPacket >
+int   BaseRpcApiHandler<RpcPacket>::doCheckParams(void)
+{
+	return pccl::STATE_SUCCESS;		
+}
+
+
+template<typename RpcPacket >
+int   BaseRpcApiHandler<RpcPacket>::doProcessWork(void)
+{
+	return pccl::STATE_SUCCESS;		
+}
+
+
+template<typename RpcPacket >
+void  BaseRpcApiHandler<RpcPacket>::doProcessEnd(void)	
+{
+	std::vector<char>& buffer	= _pBase->getOutBuffer();
+	const std::string& response = getResponse();
 	
+	buffer.clear();
+	buffer.resize( response.length() );
+	memcpy( buffer.data(), response.c_str(), response.length() );		
+}
 
-};
 
 
 }

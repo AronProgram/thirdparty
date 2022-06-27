@@ -28,7 +28,7 @@
 namespace pccl
 {
 
-template<class RpcPacket >
+template<typename RpcPacket >
 class BaseRpcApiController : public pccl::BaseRpcController<RpcPacket>
 {
 
@@ -40,22 +40,20 @@ public:
 	*
 	*  构造函数
 	*/
-	BaseRpcApiController(void) {}
+	BaseRpcApiController(void);
 	
     /**
      *
      * 析构函数
      */
-    virtual ~BaseRpcApiController() { } 
+    virtual ~BaseRpcApiController();
 
 	/**
 	*
 	* 清空环境
 	*/
-	virtual void reset()	
-	{
-		BaseRpcController<RpcPacket>::reset();
-	}
+	virtual void reset();
+	 
 
 
 protected:
@@ -63,19 +61,15 @@ protected:
 	*
 	* 初始化路由，统一处理处接口
 	*/ 
-	virtual void initRoute(void) override
-	{
-	
-	}
+	virtual void initRoute(void) override;
+	 
 
 	/**
 	*
 	* 初始化错误码
 	*/	
-	virtual void initErrorCode(void) override
-	{
-		
-	}
+	virtual void initErrorCode(void) override;
+	 
 
 	
 	/**
@@ -86,15 +80,8 @@ protected:
 	*  @params:  isAuth,   是否要鉴权
 	*
 	*/
-	void	regiterRoute(const std::string& sApi,BaseRpcApiHandler<RpcPacket>* handler )
-	{	
-		// API处理统一入口
-		this->bindRoute( sApi,  std::bind(&BaseRpcApiController<RpcPacket>::handle, this), BaseRpcRoute::NONE_ROUTE_TYPE,false );
-
-		// 每个API对应具体处理的ApiHandler
-		_factory.addApiHandle( sApi, handler );
-	}
-
+	void	regiterRoute(const std::string& sApi,BaseRpcApiHandler<RpcPacket>* handler );
+	 
 	/**
 	*	注册api handler 函数
 	*  @parmams: sApi ，API名称
@@ -103,38 +90,14 @@ protected:
 	*  @params:  isAuth,   是否要鉴权
 	*
 	*/
-	void	regiterRoute(const std::string& sApi,BaseRpcApiHandler<RpcPacket>* handler, int	   method,	bool isAuth = false )
-	{	
-		// API处理统一入口
-		this->bindRoute( sApi,  std::bind(&BaseRpcApiController<RpcPacket>::handle, this), (BaseRpcRoute::RpcRouteRquestType)method , isAuth );
-
-		// 每个API对应具体处理的ApiHandler
-		_factory.addApiHandle( sApi, handler );
-	}
-
+	void	regiterRoute(const std::string& sApi,BaseRpcApiHandler<RpcPacket>* handler, int       method,	bool isAuth = false );
+	 
 	
 	/**
 	*  http协议路由处理总入口
 	*/
-	virtual int handle(void)	
-	{
-	
-		int result = pccl::STATE_SUCCESS;
-	
-		//获取的api handler
-		BaseRpcApiHandler<RpcPacket>*		pHandler  = _factory.createHandler( this->getRoute() );
-		
-	
-		//处理前准备
-		pHandler->reset();
-		pHandler->setBasePointer(this);
-		pHandler->setSequence( this->getSequence() );
-	
-		//逻辑处理
-		result = pHandler->doProcessApi();		
-		
-		return result;	
-	}
+	virtual int handle(void);
+	 
 
 
 private:
@@ -146,6 +109,84 @@ private:
 	
 	
 };
+
+
+
+
+
+template<typename RpcPacket >
+BaseRpcApiController<RpcPacket>::BaseRpcApiController(void) 
+{
+
+}
+
+template<typename RpcPacket >
+BaseRpcApiController<RpcPacket>:: ~BaseRpcApiController()
+{
+
+}
+
+template<typename RpcPacket >
+void BaseRpcApiController<RpcPacket>::reset()	
+{
+	BaseRpcController<RpcPacket>::reset();
+}
+
+
+
+template<typename RpcPacket >
+void BaseRpcApiController<RpcPacket>::initRoute(void) 
+{
+
+}
+
+template<typename RpcPacket >	
+void BaseRpcApiController<RpcPacket>::initErrorCode(void) 
+{
+	
+}
+
+
+template<typename RpcPacket >
+void	BaseRpcApiController<RpcPacket>::regiterRoute(const std::string& sApi,BaseRpcApiHandler<RpcPacket>* handler )
+{	
+	// API处理统一入口
+	this->bindRoute( sApi,  std::bind(&BaseRpcApiController<RpcPacket>::handle, this), BaseRpcRoute::NONE_ROUTE_TYPE,false );
+
+	// 每个API对应具体处理的ApiHandler
+	_factory.addApiHandle( sApi, handler );
+}
+
+template<typename RpcPacket >
+void	BaseRpcApiController<RpcPacket>::regiterRoute(const std::string& sApi,BaseRpcApiHandler<RpcPacket>* handler, int       method,	bool isAuth  )
+{	
+	// API处理统一入口
+	this->bindRoute( sApi,  std::bind(&BaseRpcApiController<RpcPacket>::handle, this), (BaseRpcRoute::RpcRouteRquestType)method , isAuth );
+
+	// 每个API对应具体处理的ApiHandler
+	_factory.addApiHandle( sApi, handler );
+}
+
+template<typename RpcPacket >
+int BaseRpcApiController<RpcPacket>::handle(void)	
+{
+
+	int result = pccl::STATE_SUCCESS;
+
+	//获取的api handler
+	BaseRpcApiHandler<RpcPacket>*		pHandler  = _factory.createHandler( this->getRoute() );
+	
+
+	//处理前准备
+	pHandler->reset();
+	pHandler->setBasePointer(this);
+	pHandler->setSequence( this->getSequence() );
+
+	//逻辑处理
+	result = pHandler->doProcessApi();		
+	
+	return result;	
+}
 
 
 }
