@@ -27,7 +27,7 @@ namespace pccl
 
 
 
-BaseRpcHttpPacket::BaseRpcHttpPacket()
+BaseRpcHttpPacket::BaseRpcHttpPacket():_method(0)
 {
 
 }
@@ -65,8 +65,9 @@ int BaseRpcHttpPacket::decodePacket(const std::vector<char>& buffer)
 			return pccl::STATE_ERROR;  
 		}
 			
-		// 路由
-		_route               = packet.getRequest();	
+		// 路由/命令
+		_method = packet.requestType();
+		_route  = packet.getRequest();	
 		parseUrlBody(_route);	
 
 		// content type
@@ -82,7 +83,7 @@ int BaseRpcHttpPacket::decodePacket(const std::vector<char>& buffer)
 		}
 		
 		//解析http query stirng 的参数
-		parseUrlBody(content);		
+		parseUrlBody(content);				
 		
 		return pccl::STATE_SUCCESS;
 
@@ -149,6 +150,12 @@ REQUEST_PARAMS& 		BaseRpcHttpPacket::getParams(void)
 Json::Value& 		    BaseRpcHttpPacket::getDocument(void)    
 {
 	return _document;
+}
+
+
+int 					BaseRpcHttpPacket::getMethod(void)
+{
+	return _method;
 }
 
 

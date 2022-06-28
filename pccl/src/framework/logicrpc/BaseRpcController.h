@@ -330,12 +330,13 @@ int BaseRpcController<RpcPacket>::doProcessRoute(void)
 	int                result = pccl::STATE_SUCCESS;
 	
 	const std::string& route  = _request.getRoute();
+	int                method = _request.getMethod();
 	
-	TLOG_DEBUG("doProcessRoute , sequence:" <<  _request.getSequence() <<  ",route:" << route  << std::endl);	
+	TLOG_DEBUG("doProcessRoute , sequence:" <<  _request.getSequence() <<  ",route:" << route << ",method:" << method << std::endl);	
 	
 
 	//处理业务逻辑
-	if (  !this->hasMethod(route) )
+	if (  !this->hasMethod( route, method ) )
 	{
 		this->error(ROUTER_ERROR);		
 		return pccl::STATE_ERROR;

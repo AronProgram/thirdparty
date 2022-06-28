@@ -119,7 +119,13 @@ public:
 	* 处理路由
 	*/
 	int  doRoute(const std::string& sRoute);
-	
+
+
+	/**
+	*
+	*  判断url的处方法与设置的是否一致
+	*/
+	bool hasMethod(const std::string& sRoute, int method);
 	
 
 	/**

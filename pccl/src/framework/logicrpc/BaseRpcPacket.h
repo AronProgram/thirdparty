@@ -39,6 +39,7 @@ public:
 	virtual std::string&  			getRoute(void)           = 0;	
 	virtual REQUEST_PARAMS&        	getParams(void)          = 0;
 	virtual Json::Value&            getDocument(void)        = 0;	
+	virtual int                     getMethod(void)          = 0;
 
 };
 
