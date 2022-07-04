@@ -23,7 +23,7 @@
 #include "BaseRpcRequestParams.h"
 #include "BaseRpcRoute.h"
 #include "BaseRpcProcess.h"
-#include "BaseRpcResult.h"
+#include "BaseResult.h"
 #include <map>
 #include <string>
 #include <vector>
@@ -37,7 +37,7 @@ namespace pccl
 
 
 template<typename RpcPacket >
-class BaseRpcController : public pccl::BaseRpcProcess,  public pccl::BaseRpcRoute,  public  pccl::BaseRpcResult
+class BaseRpcController : public pccl::BaseRpcProcess,  public pccl::BaseRpcRoute,  public  pccl::BaseResult
 {
 
 public:
@@ -117,7 +117,13 @@ public:
 	* 初始化错误码，统一错误码处理
 	*  
 	*/
-	virtual void initErrorCode(void)         = 0;
+	virtual void initError(void)         = 0;
+	
+
+	/** 
+	*输出数据结果到客户端
+	*/
+	virtual void  doOutput(void)         = 0;
 	
 
 
@@ -146,16 +152,18 @@ public:
 	*
 	*  获取http body json数据参数
 	*/
-	Json::Value&           getDoc (void);
+	Json::Value&         getDoc (void);
 
 	
 	/**
 	* 获取http请求的header/body的后面序列化后的参数列表,
 	* 
 	*/
-	REQUEST_PARAMS& 	getParams(void);	
+	REQUEST_PARAMS& 	 getParams(void);	
 	
-	std::string&    	getParams(const std::string& sKey);	
+	std::string&    	 getParams(const std::string& sKey);	
+
+	const std::string&   getError(int code);
 	
 
 protected:		
@@ -174,12 +182,11 @@ protected:
 	* 处理鉴权: jwt,authorize,token等等鉴权模式
 	* reutrn int , 0：success ，返回200; 非0 ： 失败,返回403
 	*/
-	virtual int doProcessAuth(void);
-	
+	virtual int   doProcessAuth(void);
 
 
 
-private:
+protected:
 	
 	/*
 	* 状态
@@ -196,6 +203,10 @@ private:
 	*/
 	std::vector<char>* 				 _outBuffer;  
 
+	/*
+	*错误CODE
+	*/
+	BaseErrorCode                    _error;	
 
 	/*
 	*报文
@@ -221,6 +232,7 @@ BaseRpcController<RpcPacket>::~BaseRpcController(void)
 template<typename RpcPacket >
 void BaseRpcController<RpcPacket>::reset()
 {
+	BaseResult::reset();
 	_request.reset();	
 }
 
@@ -272,10 +284,8 @@ std::vector<char>& BaseRpcController<RpcPacket>::getOutBuffer(void)
 template<typename RpcPacket >
 void BaseRpcController<RpcPacket>::initialization(void)	
 {	
-	initErrorCode();
-	
-	initRoute();	
-	
+	initError();	
+	initRoute();		
 }
 
 template<typename RpcPacket >
@@ -290,7 +300,7 @@ int BaseRpcController<RpcPacket>::doProcess(void)
 	result = doProcessParse();
 	if ( pccl::STATE_ERROR == result )
 	{	
-		this->error(BaseErrorCode::PARSE_ERROR);
+		this->error( BaseErrorCode::PARSE_ERROR, getError( BaseErrorCode::PARSE_ERROR ) );
 		return pccl::STATE_SUCCESS;
 	}	
 
@@ -326,9 +336,7 @@ int BaseRpcController<RpcPacket>::doProcessParse(void)
 template<typename RpcPacket >
 int BaseRpcController<RpcPacket>::doProcessRoute(void)
 {
-	// 调用处理过程
-	int                result = pccl::STATE_SUCCESS;
-	
+	// 调用处理过程	
 	const std::string& route  = _request.getRoute();
 	int                method = _request.getMethod();
 	
@@ -337,8 +345,8 @@ int BaseRpcController<RpcPacket>::doProcessRoute(void)
 
 	//处理业务逻辑
 	if (  !this->hasMethod( route, method ) )
-	{
-		this->error(ROUTER_ERROR);		
+	{	
+		this->error( BaseErrorCode::ROUTER_ERROR, getError( BaseErrorCode::ROUTER_ERROR ) );
 		return pccl::STATE_ERROR;
 	}
 	
@@ -365,6 +373,12 @@ template<typename RpcPacket >
 const std::string& BaseRpcController<RpcPacket>::getSequence()
 {
 	return _request.getSequence();
+}
+
+template<typename RpcPacket >
+const std::string& BaseRpcController<RpcPacket>::getError(int code)
+{
+	return _error.getError(code);
 }
 
 

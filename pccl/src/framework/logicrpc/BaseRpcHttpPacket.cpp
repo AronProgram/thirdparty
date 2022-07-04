@@ -65,25 +65,23 @@ int BaseRpcHttpPacket::decodePacket(const std::vector<char>& buffer)
 			return pccl::STATE_ERROR;  
 		}
 			
-		// 路由/命令
-		_method = packet.requestType();
-		_route  = packet.getRequest();	
+		// 路由
+		_method              = packet.requestType();
+		_route               = packet.getRequest();	
 		parseUrlBody(_route);	
 
 		// content type
-		std::string type     = packet.getContentType();
+		std::string& content       = packet.getContent();
+		std::string  contentType   = tars::TC_Common::lower( packet.getContentType() );		
 		
-		//body
-		std::string& content = packet.getContent();
-		
-		// json
-		if ( type.find("application/json") )
+		// json         application/json
+		if ( contentType.compare("application/json") == 0  )  
 		{
 			return parseJsonBody( content );
 		}
 		
 		//解析http query stirng 的参数
-		parseUrlBody(content);				
+		parseUrlBody(content);		
 		
 		return pccl::STATE_SUCCESS;
 
