@@ -57,6 +57,21 @@ const std::string&  BaseResult::getMessage()
 	return _message;
 }
 
+std::string 		BaseResult::getErrorResponse()
+{
+	Json::Value data;
+
+	data["code"]     = getCode();
+	data["msg"]      = getMessage();
+	data["data"]     = Json::Value::null;
+	data["sequence"] = getSequence();
+
+	Json::StreamWriterBuilder builder;
+	std::string content = Json::writeString(builder, data);
+
+	return content;
+}
+
 
 const std::string&	BaseResult::getSequence()
 {

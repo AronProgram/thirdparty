@@ -306,9 +306,6 @@ int BaseRpcController<RpcPacket>::doProcess(void)
 
 	TLOG_DEBUG( "doProcessRoute" << std::endl );
 
-	//todo
-	//限制策略: 频率，ip,黑名单
-
 	// 处理路由
 	result = doProcessRoute();
 	

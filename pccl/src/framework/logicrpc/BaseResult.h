@@ -60,6 +60,8 @@ public:
 	
 	int  getCode();
 	const std::string&  getMessage();
+	
+	std::string         getErrorResponse();
 
 	void                setSequence(const std::string& sSeq);
 	const std::string&  getSequence();
@@ -69,6 +71,8 @@ public:
 
 	void error(int code);
 	void error(int code,const std::string& msg );
+
+
 
 
 
