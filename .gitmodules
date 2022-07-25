@@ -34,3 +34,6 @@
 [submodule "libconfig"]
 	path = libconfig
 	url = https://github.com/hyperrealm/libconfig.git
+[submodule "cppgraphqlgen"]
+	path = cppgraphqlgen
+	url = https://github.com/microsoft/cppgraphqlgen.git
