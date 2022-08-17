@@ -37,3 +37,6 @@
 [submodule "cppgraphqlgen"]
 	path = cppgraphqlgen
 	url = https://github.com/microsoft/cppgraphqlgen.git
+[submodule "enkiTS"]
+	path = enkiTS
+	url = https://github.com/dougbinks/enkiTS.git
