@@ -40,3 +40,6 @@
 [submodule "enkiTS"]
 	path = enkiTS
 	url = https://github.com/dougbinks/enkiTS.git
+[submodule "jwt-cpp"]
+	path = jwt-cpp
+	url = https://github.com/Thalhammer/jwt-cpp.git
