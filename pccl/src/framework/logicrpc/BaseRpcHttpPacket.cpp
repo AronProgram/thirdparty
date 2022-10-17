@@ -69,17 +69,29 @@ int BaseRpcHttpPacket::decodePacket(const std::vector<char>& buffer)
 		_method              = packet.requestType();
 		_route               = packet.getRequestUrl();	
 
+		// http headers
+		REQUEST_PARAMS   headers;
+		packet.getHeaders(headers);
+		for( auto it = headers.begin(); it != headers.end(); ++it )
+		{
+			_params.insert(map<string, string>::value_type( it->first, it->second ));
+		}
+
 		std::string urlParam = packet.getRequestParam();
 
 		// 解析其他参数
 		parseUrlBody(urlParam);	
+		
 
-		// content type
+		// content body
 		std::string& content       = packet.getContent();
+		_params["Body"]            = content;
+
+		/// content type
 		std::string  contentType   = tars::TC_Common::lower( packet.getContentType() );		
 		
 		// json         application/json
-		if ( contentType.find("application/json") != std::string::npos )  
+		if ( !content.empty() && contentType.find("application/json") != std::string::npos )  
 		{
 			return parseJsonBody( content );
 		}

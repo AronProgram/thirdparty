@@ -82,7 +82,7 @@ bool BaseRpcRoute::hasAuth(const std::string& sRoute)
 
 	if ( exec.authorize )
 	{
-		TLOGDEBUG("the url is authorization, route:" << sRoute << std::endl);
+		TLOGDEBUG("the route is authorization, route:" << sRoute << std::endl);
 		return true;
 	}
 

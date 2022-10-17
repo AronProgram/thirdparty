@@ -162,7 +162,7 @@ public:
 	REQUEST_PARAMS& 	 getParams(void);	
 	
 	std::string&    	 getParams(const std::string& sKey);	
-
+	void                 putParams(const std::string& sKey, const std::string& sValue);
 	const std::string&   getError(int code);
 	
 
@@ -261,6 +261,11 @@ std::string&    	 BaseRpcController<RpcPacket>::getParams(const std::string& sKe
 	return _request.getParams(sKey);
 }
 
+template<typename RpcPacket >
+void    	 BaseRpcController<RpcPacket>::putParams(const std::string& sKey, const std::string& sValue)
+{
+	_request.putParams(sKey,sValue);
+}
 
 
 template<typename RpcPacket >
@@ -346,7 +351,15 @@ int BaseRpcController<RpcPacket>::doProcessRoute(void)
 		this->error( BaseErrorCode::ROUTER_ERROR, getError( BaseErrorCode::ROUTER_ERROR ) );
 		return pccl::STATE_ERROR;
 	}
-	
+
+	// 处理鉴权
+	if ( this->hasAuth( route ) &&  doProcessAuth() != pccl::STATE_SUCCESS )
+	{
+		this->error( BaseErrorCode::AUTHOR_ERROR, getError( BaseErrorCode::AUTHOR_ERROR ) );
+		return pccl::STATE_ERROR;
+	}
+
+	// 处理路由
 	return this->doRoute(route);	
 	
 }
