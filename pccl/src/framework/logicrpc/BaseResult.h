@@ -57,6 +57,7 @@ public:
 	* 
 	*/
 	void reset();	
+	void clear();	
 	
 	int  getCode();
 	const std::string&  getMessage();

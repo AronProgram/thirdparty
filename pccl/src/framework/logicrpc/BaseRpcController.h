@@ -80,6 +80,14 @@ public:
 	*/
 	virtual void reset();
 
+	
+	/*
+	*
+	*  清空变量
+	*
+	*/	
+	void         clear();
+
 
 	/**
 	*
@@ -228,6 +236,13 @@ BaseRpcController<RpcPacket>::~BaseRpcController(void)
 {  
 
 } 
+
+template<typename RpcPacket >
+void BaseRpcController<RpcPacket>::clear()
+{
+	BaseResult::clear();
+}
+
 
 template<typename RpcPacket >
 void BaseRpcController<RpcPacket>::reset()

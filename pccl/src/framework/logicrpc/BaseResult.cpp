@@ -47,6 +47,14 @@ void BaseResult::reset()
 	_response = "";	
 }
 
+void BaseResult::clear()
+{
+	_code     = 0;
+	_message  = "";
+	_response = "";	
+	
+}
+
 int  BaseResult::getCode()
 {
 	return _code;

@@ -16,6 +16,7 @@
 #pragma once
 
 #include "BaseRpcPlus.h"
+#include "json.h"
 #include "BaseRpcController.h"
 #include "BaseResult.h"
 #include "BaseErrorCode.h"
@@ -83,11 +84,22 @@ protected:
 
 
 protected:
+	/**
+	* 清除错误
+	**/
+	void               clear(void);
+
+	/**
+	* 设置返回错误 
+	**/
 	void               error( int code , const std::string& msg);
 	const std::string& getError( int code );
 	std::string&       getResponse(void);
 	void               setResponse(const std::string& response);
 	const std::string& getSequence(void);
+	std::string&       getParams(const std::string& sKey);
+	void               putParams(const std::string& sKey, const std::string& sValue);
+	Json::Value&       getDoc(void);
 	
 	
 	
@@ -127,6 +139,14 @@ BaseRpcController<RpcPacket>&  BaseRpcApiHandler<RpcPacket>::getBasePointerRef()
 	return *_pBase;
 }
 
+
+template<typename RpcPacket >
+void BaseRpcApiHandler<RpcPacket>::clear(void)
+{	
+	 _pBase->clear();
+}
+
+
 template<typename RpcPacket >	
 void BaseRpcApiHandler<RpcPacket>::error( int code , const std::string& msg )
 {
@@ -157,6 +177,25 @@ const std::string& BaseRpcApiHandler<RpcPacket>::getSequence(void)
 {
 	return _pBase->getSequence();
 }
+
+template<typename RpcPacket >
+std::string&	   BaseRpcApiHandler<RpcPacket>::getParams(const std::string& sKey)
+{
+	return _pBase->getParams(sKey);
+}
+
+template<typename RpcPacket >
+void 	   BaseRpcApiHandler<RpcPacket>::putParams(const std::string& sKey, const std::string& sValue)
+{
+	return _pBase->putParams(sKey,sValue);
+}
+
+template<typename RpcPacket >
+Json::Value& 	   BaseRpcApiHandler<RpcPacket>::getDoc(void)
+{
+	return _pBase->getDoc();
+}
+
 
 
 template<typename RpcPacket >
