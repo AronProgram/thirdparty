@@ -172,6 +172,7 @@ public:
 	std::string&    	 getParams(const std::string& sKey);	
 	void                 putParams(const std::string& sKey, const std::string& sValue);
 	const std::string&   getError(int code);
+	void                 addError(int code, const std::string& message);
 	
 
 protected:		
@@ -404,6 +405,12 @@ template<typename RpcPacket >
 const std::string& BaseRpcController<RpcPacket>::getError(int code)
 {
 	return _error.getError(code);
+}
+
+template<typename RpcPacket >
+void  BaseRpcController<RpcPacket>::addError(int code, const std::string& message)
+{
+	return _error.addError(code,message);
 }
 
 

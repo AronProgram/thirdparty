@@ -78,6 +78,8 @@ protected:
 	virtual void direct(const std::string& sBody);
 	virtual void success( const std::string& data );
 	virtual void success( const Json::Value& data );
+	virtual void failure( int code, const std::string&  message);
+	virtual void failure( const Json::Value& data,int code, const std::string&  message);
 	virtual void forbid(const std::string& sMsg);
 	virtual void redirect(const std::string& sUrl);
 	virtual void redirect(const std::string& sUrl, const std::vector<std::string>& cookieHeader);
@@ -156,6 +158,20 @@ template<typename RpcPacket >
 void   BaseRpcHttpApiHandler<RpcPacket>::success(const Json::Value& data    )
 {
 	BaseRpcHttpApiHandler<RpcPacket>::result(data);
+}
+
+template<typename RpcPacket > 
+void BaseRpcHttpApiHandler<RpcPacket>::failure( int code, const std::string&	message)
+{
+	std::string data;
+	BaseRpcHttpApiHandler<RpcPacket>::result( data,code,message);
+}
+
+
+template<typename RpcPacket > 
+void BaseRpcHttpApiHandler<RpcPacket>::failure( const Json::Value& data,int code, const std::string&	message)
+{
+	BaseRpcHttpApiHandler<RpcPacket>::result( data,code,message);
 }
 
 template<typename RpcPacket > 
