@@ -25,6 +25,8 @@
 #include <map>
 
 
+using namespace tars;
+
 namespace pccl
 {
 
@@ -100,6 +102,10 @@ protected:
 	std::string&       getParams(const std::string& sKey);
 	void               putParams(const std::string& sKey, const std::string& sValue);
 	Json::Value&       getDoc(void);
+	TarsCurrentPtr&    getCurrent(void);
+	void               close(void);
+	void               sendClient(const char* sendBuff, uint32_t length);
+	void               sendClient(const std::string& sendBuff);
 	
 	
 	
@@ -196,6 +202,31 @@ Json::Value& 	   BaseRpcApiHandler<RpcPacket>::getDoc(void)
 	return _pBase->getDoc();
 }
 
+template<typename RpcPacket >
+TarsCurrentPtr&    BaseRpcApiHandler<RpcPacket>::getCurrent(void)
+{
+	return _pBase->getCurrent();
+}
+
+template<typename RpcPacket >
+void			   BaseRpcApiHandler<RpcPacket>::close(void)
+{
+	_pBase->close();
+}
+
+template<typename RpcPacket >
+void			   BaseRpcApiHandler<RpcPacket>::sendClient(const char* sendBuff, uint32_t length)
+{
+	TarsCurrentPtr& current = BaseRpcApiHandler<RpcPacket>::getCurrent();
+	current->sendResponse(sendBuff,length);
+}
+
+template<typename RpcPacket >
+void			   BaseRpcApiHandler<RpcPacket>::sendClient(const std::string& sendBuff)
+{
+	BaseRpcApiHandler<RpcPacket>::sendClient( sendBuff.c_str(), sendBuff.length() );
+}
+			   
 
 
 template<typename RpcPacket >

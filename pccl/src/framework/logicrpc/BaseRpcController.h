@@ -95,6 +95,12 @@ public:
 	*/
 	void setInOut(std::vector<char>* inBuffer, std::vector<char>* outBuffer);
 
+	/**
+	*
+	* 设置输入和输出的请求
+	*/
+	void setRequest( const TarsCurrentPtr& current, std::vector<char>* outBuffer );
+
 	
 	/*
 	* 输出缓冲区 
@@ -141,6 +147,12 @@ public:
      */
     virtual int doProcess(void);
 
+
+	/*
+	* 获取current
+	*/
+	TarsCurrentPtr& getCurrent();
+
 	
 	/*
 	* 获取路由
@@ -173,6 +185,12 @@ public:
 	void                 putParams(const std::string& sKey, const std::string& sValue);
 	const std::string&   getError(int code);
 	void                 addError(int code, const std::string& message);
+
+
+	/*
+	* close socket
+	*/
+	void                 close(void);
 	
 
 protected:		
@@ -201,11 +219,16 @@ protected:
 	* 状态
 	*/	
 	bool 		                     _status;
+
+	/*
+	* 输入current
+	*/
+	TarsCurrentPtr                   _current;
 	
 	/*
 	* 输入buffer
 	*/
-	std::vector<char>*      		 _inBuffer;
+	std::vector<char>*      		 _inBuffer;	
 	
 	/*
 	* 输出buffer
@@ -227,7 +250,7 @@ protected:
 
 
 template<typename RpcPacket > 
-BaseRpcController<RpcPacket>::BaseRpcController(void) :        _status(false) 
+BaseRpcController<RpcPacket>::BaseRpcController(void) :        _status(false),_inBuffer(nullptr),_outBuffer(nullptr)
 {  
 
 } 
@@ -251,6 +274,13 @@ void BaseRpcController<RpcPacket>::reset()
 	BaseResult::reset();
 	_request.reset();	
 }
+
+template<typename RpcPacket >
+TarsCurrentPtr& BaseRpcController<RpcPacket>::getCurrent()
+{
+	return _current;
+}
+
 
 template<typename RpcPacket >
 BaseRpcRequestParams<RpcPacket>& BaseRpcController<RpcPacket>::getRequest()
@@ -292,6 +322,19 @@ void BaseRpcController<RpcPacket>::setInOut(std::vector<char>* inBuffer, std::ve
 
 	_request.setBuffer(_inBuffer,_outBuffer);
 }
+
+template<typename RpcPacket >
+void BaseRpcController<RpcPacket>::setRequest( const TarsCurrentPtr& current, std::vector<char>* outBuffer )
+{
+	_current = current;
+	
+	const std::vector<char>& inBuffer = current->getRequestBuffer();
+	
+	_inBuffer  = (std::vector<char>*)(&inBuffer);
+	_outBuffer = outBuffer;
+	_request.setBuffer(_inBuffer,_outBuffer);
+}
+
 
 
 template<typename RpcPacket >
@@ -411,6 +454,12 @@ template<typename RpcPacket >
 void  BaseRpcController<RpcPacket>::addError(int code, const std::string& message)
 {
 	return _error.addError(code,message);
+}
+
+template<typename RpcPacket >
+void  BaseRpcController<RpcPacket>::close(void)
+{
+	_current->close();
 }
 
 
