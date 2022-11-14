@@ -52,3 +52,6 @@
 [submodule "nedmalloc"]
 	path = nedmalloc
 	url = https://github.com/ned14/nedmalloc.git
+[submodule "jemalloc"]
+	path = jemalloc
+	url = https://github.com/jemalloc/jemalloc.git
