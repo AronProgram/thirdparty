@@ -55,3 +55,6 @@
 [submodule "jemalloc"]
 	path = jemalloc
 	url = https://github.com/jemalloc/jemalloc.git
+[submodule "concurrentqueue"]
+	path = concurrentqueue
+	url = https://github.com/cameron314/concurrentqueue.git
