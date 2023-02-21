@@ -58,3 +58,6 @@
 [submodule "concurrentqueue"]
 	path = concurrentqueue
 	url = https://github.com/cameron314/concurrentqueue.git
+[submodule "nanomsg"]
+	path = nanomsg
+	url = https://github.com/nanomsg/nanomsg.git
