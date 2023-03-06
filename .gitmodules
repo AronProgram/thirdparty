@@ -61,3 +61,6 @@
 [submodule "nanomsg"]
 	path = nanomsg
 	url = https://github.com/nanomsg/nanomsg.git
+[submodule "sonic-cpp"]
+	path = sonic-cpp
+	url = https://github.com/bytedance/sonic-cpp.git
