@@ -64,3 +64,6 @@
 [submodule "sonic-cpp"]
 	path = sonic-cpp
 	url = https://github.com/bytedance/sonic-cpp.git
+[submodule "libhv"]
+	path = libhv
+	url = https://github.com/ithewei/libhv.git
