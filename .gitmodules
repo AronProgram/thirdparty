@@ -67,3 +67,6 @@
 [submodule "libhv"]
 	path = libhv
 	url = https://github.com/ithewei/libhv.git
+[submodule "qbusbridge"]
+	path = qbusbridge
+	url = https://github.com/Qihoo360/qbusbridge.git
