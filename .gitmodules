@@ -34,12 +34,6 @@
 [submodule "libconfig"]
 	path = libconfig
 	url = https://github.com/hyperrealm/libconfig.git
-[submodule "cppgraphqlgen"]
-	path = cppgraphqlgen
-	url = https://github.com/microsoft/cppgraphqlgen.git
-[submodule "enkiTS"]
-	path = enkiTS
-	url = https://github.com/dougbinks/enkiTS.git
 [submodule "jwt-cpp"]
 	path = jwt-cpp
 	url = https://github.com/Thalhammer/jwt-cpp.git
