@@ -64,3 +64,6 @@
 [submodule "cppkafka"]
 	path = cppkafka
 	url = https://github.com/mfontanini/cppkafka.git
+[submodule "poco"]
+	path = poco
+	url = https://github.com/pocoproject/poco.git
