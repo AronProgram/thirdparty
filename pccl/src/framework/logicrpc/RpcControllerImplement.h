@@ -31,7 +31,7 @@ namespace pccl
  *
  *
  */
-template<typename Controller>
+template<typename Controller, bool IsCore = true>
 class RpcControllerImplement : public Servant {
 public:
     /**
@@ -63,14 +63,29 @@ public:
      */
     int doRequest(TarsCurrentPtr current, std::vector<char>& outBuffer)
 	{
+		if ( IsCore == true )
+		{
+			return doRequestWithAny(current,outBuffer);
+		}
+		else
+		{
+			return doRequestWithDebug(current,outBuffer);
+		}
+		
+	}
+
+	
+    /**
+     * 处理http请求
+     * @param TarsCurrentPtr : current
+     * @param vector<char>   : buffer
+     * @return :  true : is exist , false: not exist
+     */
+    int doRequestWithDebug(TarsCurrentPtr current, std::vector<char>& outBuffer)
+	{
 		try
 		{
-			_controller.reset();
-			_controller.setRequest( current, &outBuffer );
-			int result = _controller.doProcess();
-			_controller.doOutput();
-			
-			TLOGDEBUG( "[PCCL] RpcApi result:" << result << ",response outBuffer size:" << outBuffer.size() << std::endl );
+			return doRequestWithAny(current,outBuffer);
 		}
 		catch(exception &ex)
 		{
@@ -85,8 +100,28 @@ public:
 	}
 
 
+	 /**
+     * 处理http请求
+     * @param TarsCurrentPtr : current
+     * @param vector<char>   : buffer
+     * @return :  true : is exist , false: not exist
+     */
+    int doRequestWithAny(TarsCurrentPtr current, std::vector<char>& outBuffer)
+	{
+		
+		_controller.reset();
+		_controller.setRequest( current, &outBuffer );
+		int result = _controller.doProcess();
+		_controller.doOutput();
+		
+		TLOGDEBUG( "[PCCL] RpcApi result:" << result << ",response outBuffer size:" << outBuffer.size() << std::endl );
+		
+		return pccl::STATE_SUCCESS;
+	}
+
 private:
 	Controller _controller;
+	
 
 
 };
