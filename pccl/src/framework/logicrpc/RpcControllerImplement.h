@@ -63,13 +63,12 @@ public:
      */
     int doRequest(TarsCurrentPtr current, std::vector<char>& outBuffer)
 	{
-		const std::vector<char>& inBuffer = current->getRequestBuffer();
-
 		try
 		{
 			_controller.reset();
-			_controller.setInOut( (std::vector<char>*)&inBuffer, &outBuffer );
+			_controller.setRequest( current, &outBuffer );
 			int result = _controller.doProcess();
+			_controller.doOutput();
 			
 			TLOGDEBUG( "[PCCL] RpcApi result:" << result << ",response outBuffer size:" << outBuffer.size() << std::endl );
 		}

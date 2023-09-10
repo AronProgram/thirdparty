@@ -16,19 +16,22 @@
 #pragma once
 
 #include "BaseRpcPlus.h"
+#include "json.h"
 #include "BaseRpcController.h"
-#include "BaseRpcResult.h"
+#include "BaseResult.h"
 #include "BaseErrorCode.h"
 #include <iostream>
 #include <string>
 #include <map>
 
 
+using namespace tars;
+
 namespace pccl
 {
 
 template<typename RpcPacket >
-class BaseRpcApiHandler: public BaseRpcResult
+class BaseRpcApiHandler
 {
 public:
 	/*
@@ -78,13 +81,31 @@ protected:
 	* 业务处理
 	**/
 	virtual int  doProcessWork(void);
-	 
 
+
+
+
+protected:
+	/**
+	* 清除错误
+	**/
+	void               clear(void);
 
 	/**
-	*	输出
-	*/
-	virtual void doProcessEnd(void);
+	* 设置返回错误 
+	**/
+	void               error( int code , const std::string& msg);
+	const std::string& getError( int code );
+	std::string&       getResponse(void);
+	void               setResponse(const std::string& response);
+	const std::string& getSequence(void);
+	std::string&       getParams(const std::string& sKey);
+	void               putParams(const std::string& sKey, const std::string& sValue);
+	Json::Value&       getDoc(void);
+	TarsCurrentPtr&    getCurrent(void);
+	void               close(void);
+	void               sendClient(const char* sendBuff, uint32_t length);
+	void               sendClient(const std::string& sendBuff);
 	
 	
 	
@@ -108,7 +129,6 @@ BaseRpcApiHandler<RpcPacket>::~BaseRpcApiHandler(void)
 template<typename RpcPacket >
 void BaseRpcApiHandler<RpcPacket>::reset()	
 { 
-	BaseRpcResult::reset();
 	_pBase = NULL;
 }
 
@@ -124,21 +144,101 @@ BaseRpcController<RpcPacket>&  BaseRpcApiHandler<RpcPacket>::getBasePointerRef()
 {
 	return *_pBase;
 }
-	
+
+
+template<typename RpcPacket >
+void BaseRpcApiHandler<RpcPacket>::clear(void)
+{	
+	 _pBase->clear();
+}
+
+
+template<typename RpcPacket >	
+void BaseRpcApiHandler<RpcPacket>::error( int code , const std::string& msg )
+{
+	_pBase->error( code, msg );
+}
+
+template<typename RpcPacket >	
+const std::string& BaseRpcApiHandler<RpcPacket>::getError( int code )
+{
+	return _pBase->getError( code );
+}
+
+
+template<typename RpcPacket >	
+std::string& BaseRpcApiHandler<RpcPacket>::getResponse(void)
+{
+	return _pBase->getResponse();
+}
+
+template<typename RpcPacket >	
+void	BaseRpcApiHandler<RpcPacket>::setResponse(const std::string& response)
+{
+	return _pBase->setResponse( response );
+}
+
+template<typename RpcPacket >
+const std::string& BaseRpcApiHandler<RpcPacket>::getSequence(void)
+{
+	return _pBase->getSequence();
+}
+
+template<typename RpcPacket >
+std::string&	   BaseRpcApiHandler<RpcPacket>::getParams(const std::string& sKey)
+{
+	return _pBase->getParams(sKey);
+}
+
+template<typename RpcPacket >
+void 	   BaseRpcApiHandler<RpcPacket>::putParams(const std::string& sKey, const std::string& sValue)
+{
+	return _pBase->putParams(sKey,sValue);
+}
+
+template<typename RpcPacket >
+Json::Value& 	   BaseRpcApiHandler<RpcPacket>::getDoc(void)
+{
+	return _pBase->getDoc();
+}
+
+template<typename RpcPacket >
+TarsCurrentPtr&    BaseRpcApiHandler<RpcPacket>::getCurrent(void)
+{
+	return _pBase->getCurrent();
+}
+
+template<typename RpcPacket >
+void			   BaseRpcApiHandler<RpcPacket>::close(void)
+{
+	_pBase->close();
+}
+
+template<typename RpcPacket >
+void			   BaseRpcApiHandler<RpcPacket>::sendClient(const char* sendBuff, uint32_t length)
+{
+	TarsCurrentPtr& current = BaseRpcApiHandler<RpcPacket>::getCurrent();
+	current->sendResponse(sendBuff,length);
+}
+
+template<typename RpcPacket >
+void			   BaseRpcApiHandler<RpcPacket>::sendClient(const std::string& sendBuff)
+{
+	BaseRpcApiHandler<RpcPacket>::sendClient( sendBuff.c_str(), sendBuff.length() );
+}
+			   
 
 
 template<typename RpcPacket >
 int   BaseRpcApiHandler<RpcPacket>::doProcessApi(void)
 {
-	
 
 	int result = pccl::STATE_SUCCESS;
 
 	result = doCheckParams();
 	if ( pccl::STATE_SUCCESS != result )
 	{	
-		this->error((int)BaseErrorCode::PARAMS_ERROR );
-		doProcessEnd(); 
+		error( BaseErrorCode::PARAMS_ERROR ,getError( BaseErrorCode::PARAMS_ERROR ) );
 		return pccl::STATE_ERROR;
 	}
 
@@ -146,12 +246,10 @@ int   BaseRpcApiHandler<RpcPacket>::doProcessApi(void)
 	result = doProcessWork();
 	if ( pccl::STATE_SUCCESS != result )
 	{
-		this->error( (int)BaseErrorCode::SERVER_ERROR );
-		doProcessEnd(); 
+		error( BaseErrorCode::SERVER_ERROR ,getError( BaseErrorCode::SERVER_ERROR ) );
 		return pccl::STATE_ERROR;
 	}
 
-	doProcessEnd();	
 
 	return result;	
 
@@ -171,19 +269,6 @@ int   BaseRpcApiHandler<RpcPacket>::doProcessWork(void)
 {
 	return pccl::STATE_SUCCESS;		
 }
-
-
-template<typename RpcPacket >
-void  BaseRpcApiHandler<RpcPacket>::doProcessEnd(void)	
-{
-	std::vector<char>& buffer	= _pBase->getOutBuffer();
-	const std::string& response = getResponse();
-	
-	buffer.clear();
-	buffer.resize( response.length() );
-	memcpy( buffer.data(), response.c_str(), response.length() );		
-}
-
 
 
 }

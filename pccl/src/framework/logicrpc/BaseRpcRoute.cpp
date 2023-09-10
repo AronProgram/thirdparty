@@ -82,13 +82,37 @@ bool BaseRpcRoute::hasAuth(const std::string& sRoute)
 
 	if ( exec.authorize )
 	{
-		TLOGDEBUG("the url is authorization, route:" << sRoute << std::endl);
+		TLOGDEBUG("the route is authorization, route:" << sRoute << std::endl);
 		return true;
 	}
 
 	return false;
 
 }
+
+
+
+
+bool BaseRpcRoute::hasMethod(const std::string& sRoute, int method)
+{
+	if ( !_route.count(sRoute) )
+	{	
+		TLOGERROR("no route , route:" << sRoute << std::endl);
+		return false;
+	}
+
+	EXEC_PARAM& exec = _route[sRoute];
+
+	if ( method != exec.method )
+	{
+		TLOGERROR("doRoute method error, exec method:" << exec.method << std::endl);
+		return false;
+	}
+	
+	return true;
+
+}
+
 
 
 bool BaseRpcRoute::hasMethod(const std::string& sRoute)

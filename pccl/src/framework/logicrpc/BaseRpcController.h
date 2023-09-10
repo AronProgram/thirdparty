@@ -23,7 +23,7 @@
 #include "BaseRpcRequestParams.h"
 #include "BaseRpcRoute.h"
 #include "BaseRpcProcess.h"
-#include "BaseRpcResult.h"
+#include "BaseResult.h"
 #include <map>
 #include <string>
 #include <vector>
@@ -37,7 +37,7 @@ namespace pccl
 
 
 template<typename RpcPacket >
-class BaseRpcController : public pccl::BaseRpcProcess,  public pccl::BaseRpcRoute,  public  pccl::BaseRpcResult
+class BaseRpcController : public pccl::BaseRpcProcess,  public pccl::BaseRpcRoute,  public  pccl::BaseResult
 {
 
 public:
@@ -80,12 +80,26 @@ public:
 	*/
 	virtual void reset();
 
+	
+	/*
+	*
+	*  清空变量
+	*
+	*/	
+	void         clear();
+
 
 	/**
 	*
 	* 设置输入和输出
 	*/
 	void setInOut(std::vector<char>* inBuffer, std::vector<char>* outBuffer);
+
+	/**
+	*
+	* 设置输入和输出的请求
+	*/
+	void setRequest( const TarsCurrentPtr& current, std::vector<char>* outBuffer );
 
 	
 	/*
@@ -117,7 +131,13 @@ public:
 	* 初始化错误码，统一错误码处理
 	*  
 	*/
-	virtual void initErrorCode(void)         = 0;
+	virtual void initError(void)         = 0;
+	
+
+	/** 
+	*输出数据结果到客户端
+	*/
+	virtual void  doOutput(void)         = 0;
 	
 
 
@@ -126,6 +146,12 @@ public:
      * @return :  0 : success , 非0: error
      */
     virtual int doProcess(void);
+
+
+	/*
+	* 获取current
+	*/
+	TarsCurrentPtr& getCurrent();
 
 	
 	/*
@@ -146,16 +172,25 @@ public:
 	*
 	*  获取http body json数据参数
 	*/
-	Json::Value&           getDoc (void);
+	Json::Value&         getDoc (void);
 
 	
 	/**
 	* 获取http请求的header/body的后面序列化后的参数列表,
 	* 
 	*/
-	REQUEST_PARAMS& 	getParams(void);	
+	REQUEST_PARAMS& 	 getParams(void);	
 	
-	std::string&    	getParams(const std::string& sKey);	
+	std::string&    	 getParams(const std::string& sKey);	
+	void                 putParams(const std::string& sKey, const std::string& sValue);
+	const std::string&   getError(int code);
+	void                 addError(int code, const std::string& message);
+
+
+	/*
+	* close socket
+	*/
+	void                 close(void);
 	
 
 protected:		
@@ -174,28 +209,36 @@ protected:
 	* 处理鉴权: jwt,authorize,token等等鉴权模式
 	* reutrn int , 0：success ，返回200; 非0 ： 失败,返回403
 	*/
-	virtual int doProcessAuth(void);
-	
+	virtual int   doProcessAuth(void);
 
 
 
-private:
+protected:
 	
 	/*
 	* 状态
 	*/	
 	bool 		                     _status;
+
+	/*
+	* 输入current
+	*/
+	TarsCurrentPtr                   _current;
 	
 	/*
 	* 输入buffer
 	*/
-	std::vector<char>*      		 _inBuffer;
+	std::vector<char>*      		 _inBuffer;	
 	
 	/*
 	* 输出buffer
 	*/
 	std::vector<char>* 				 _outBuffer;  
 
+	/*
+	*错误CODE
+	*/
+	BaseErrorCode                    _error;	
 
 	/*
 	*报文
@@ -207,7 +250,7 @@ private:
 
 
 template<typename RpcPacket > 
-BaseRpcController<RpcPacket>::BaseRpcController(void) :        _status(false) 
+BaseRpcController<RpcPacket>::BaseRpcController(void) :        _status(false),_inBuffer(nullptr),_outBuffer(nullptr)
 {  
 
 } 
@@ -219,10 +262,25 @@ BaseRpcController<RpcPacket>::~BaseRpcController(void)
 } 
 
 template<typename RpcPacket >
+void BaseRpcController<RpcPacket>::clear()
+{
+	BaseResult::clear();
+}
+
+
+template<typename RpcPacket >
 void BaseRpcController<RpcPacket>::reset()
 {
+	BaseResult::reset();
 	_request.reset();	
 }
+
+template<typename RpcPacket >
+TarsCurrentPtr& BaseRpcController<RpcPacket>::getCurrent()
+{
+	return _current;
+}
+
 
 template<typename RpcPacket >
 BaseRpcRequestParams<RpcPacket>& BaseRpcController<RpcPacket>::getRequest()
@@ -249,6 +307,11 @@ std::string&    	 BaseRpcController<RpcPacket>::getParams(const std::string& sKe
 	return _request.getParams(sKey);
 }
 
+template<typename RpcPacket >
+void    	 BaseRpcController<RpcPacket>::putParams(const std::string& sKey, const std::string& sValue)
+{
+	_request.putParams(sKey,sValue);
+}
 
 
 template<typename RpcPacket >
@@ -259,6 +322,19 @@ void BaseRpcController<RpcPacket>::setInOut(std::vector<char>* inBuffer, std::ve
 
 	_request.setBuffer(_inBuffer,_outBuffer);
 }
+
+template<typename RpcPacket >
+void BaseRpcController<RpcPacket>::setRequest( const TarsCurrentPtr& current, std::vector<char>* outBuffer )
+{
+	_current = current;
+	
+	const std::vector<char>& inBuffer = current->getRequestBuffer();
+	
+	_inBuffer  = (std::vector<char>*)(&inBuffer);
+	_outBuffer = outBuffer;
+	_request.setBuffer(_inBuffer,_outBuffer);
+}
+
 
 
 template<typename RpcPacket >
@@ -272,10 +348,8 @@ std::vector<char>& BaseRpcController<RpcPacket>::getOutBuffer(void)
 template<typename RpcPacket >
 void BaseRpcController<RpcPacket>::initialization(void)	
 {	
-	initErrorCode();
-	
-	initRoute();	
-	
+	initError();	
+	initRoute();		
 }
 
 template<typename RpcPacket >
@@ -290,14 +364,11 @@ int BaseRpcController<RpcPacket>::doProcess(void)
 	result = doProcessParse();
 	if ( pccl::STATE_ERROR == result )
 	{	
-		this->error(BaseErrorCode::PARSE_ERROR);
+		this->error( BaseErrorCode::PARSE_ERROR, getError( BaseErrorCode::PARSE_ERROR ) );
 		return pccl::STATE_SUCCESS;
 	}	
 
 	TLOG_DEBUG( "doProcessRoute" << std::endl );
-
-	//todo
-	//限制策略: 频率，ip,黑名单
 
 	// 处理路由
 	result = doProcessRoute();
@@ -326,21 +397,28 @@ int BaseRpcController<RpcPacket>::doProcessParse(void)
 template<typename RpcPacket >
 int BaseRpcController<RpcPacket>::doProcessRoute(void)
 {
-	// 调用处理过程
-	int                result = pccl::STATE_SUCCESS;
-	
+	// 调用处理过程	
 	const std::string& route  = _request.getRoute();
+	int                method = _request.getMethod();
 	
-	TLOG_DEBUG("doProcessRoute , sequence:" <<  _request.getSequence() <<  ",route:" << route  << std::endl);	
+	TLOG_DEBUG("doProcessRoute , sequence:" <<  _request.getSequence() <<  ",route:" << route << ",method:" << method << std::endl);	
 	
 
 	//处理业务逻辑
-	if (  !this->hasMethod(route) )
-	{
-		this->error(ROUTER_ERROR);		
+	if (  !this->hasMethod( route, method ) )
+	{	
+		this->error( BaseErrorCode::ROUTER_ERROR, getError( BaseErrorCode::ROUTER_ERROR ) );
 		return pccl::STATE_ERROR;
 	}
-	
+
+	// 处理鉴权
+	if ( this->hasAuth( route ) &&  doProcessAuth() != pccl::STATE_SUCCESS )
+	{
+		this->error( BaseErrorCode::AUTHOR_ERROR, getError( BaseErrorCode::AUTHOR_ERROR ) );
+		return pccl::STATE_ERROR;
+	}
+
+	// 处理路由
 	return this->doRoute(route);	
 	
 }
@@ -364,6 +442,24 @@ template<typename RpcPacket >
 const std::string& BaseRpcController<RpcPacket>::getSequence()
 {
 	return _request.getSequence();
+}
+
+template<typename RpcPacket >
+const std::string& BaseRpcController<RpcPacket>::getError(int code)
+{
+	return _error.getError(code);
+}
+
+template<typename RpcPacket >
+void  BaseRpcController<RpcPacket>::addError(int code, const std::string& message)
+{
+	return _error.addError(code,message);
+}
+
+template<typename RpcPacket >
+void  BaseRpcController<RpcPacket>::close(void)
+{
+	_current->close();
 }
 
 

@@ -76,7 +76,9 @@ public:
 	*  请求序列号,用于日志染色,追踪数据链条
 	*/
 	std::string& getSequence(void);
-	
+
+
+	int                   getMethod();
 
 	
 	/*
@@ -163,6 +165,11 @@ protected:
 	std::string             _sequence;
 
 	/*
+	* 命令
+	*/
+	int                     _method;
+
+	/*
 	* 路由
 	*/
 	std::string             _route;
@@ -212,6 +219,7 @@ void BaseRpcRequestParams<RpcPacket>::reset()
 	_doc.clear();	
 	_sequence = "";
 	_route	  = "";	
+	_method   = 0;
 }
 
 template<typename RpcPacket>   
@@ -224,6 +232,13 @@ template<typename RpcPacket>
 std::string& BaseRpcRequestParams<RpcPacket>::getSequence(void)	
 {
 	return _sequence;	
+}
+
+
+template<typename RpcPacket> 
+int BaseRpcRequestParams<RpcPacket>::getMethod()	
+{
+	return _method;
 }
 
 
@@ -315,9 +330,10 @@ int BaseRpcRequestParams<RpcPacket>::parseRpcPacket(void)
 		return pccl::STATE_ERROR;
 	}
 
+	_method = _packet.getMethod();
 	_route  = _packet.getRoute();
 	_params = _packet.getParams();
-	_doc    = _packet.getDocument();
+	_doc    = _packet.getDocument();	
 	
 	return pccl::STATE_SUCCESS;
 }

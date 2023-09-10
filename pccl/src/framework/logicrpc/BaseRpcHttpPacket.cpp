@@ -27,7 +27,7 @@ namespace pccl
 
 
 
-BaseRpcHttpPacket::BaseRpcHttpPacket()
+BaseRpcHttpPacket::BaseRpcHttpPacket():_method(0)
 {
 
 }
@@ -66,17 +66,32 @@ int BaseRpcHttpPacket::decodePacket(const std::vector<char>& buffer)
 		}
 			
 		// 路由
-		_route               = packet.getRequest();	
-		parseUrlBody(_route);	
+		_method              = packet.requestType();
+		_route               = packet.getRequestUrl();	
 
-		// content type
-		std::string type     = packet.getContentType();
+		// http headers
+		REQUEST_PARAMS   headers;
+		packet.getHeaders(headers);
+		for( auto it = headers.begin(); it != headers.end(); ++it )
+		{
+			_params.insert(map<string, string>::value_type( it->first, it->second ));
+		}
+
+		std::string urlParam = packet.getRequestParam();
+
+		// 解析其他参数
+		parseUrlBody(urlParam);	
 		
-		//body
-		std::string& content = packet.getContent();
+
+		// content body
+		std::string& content       = packet.getContent();
+		_params["Body"]            = content;
+
+		/// content type
+		std::string  contentType   = tars::TC_Common::lower( packet.getContentType() );		
 		
-		// json
-		if ( type.find("application/json") )
+		// json         application/json
+		if ( !content.empty() && contentType.find("application/json") != std::string::npos )  
 		{
 			return parseJsonBody( content );
 		}
@@ -108,8 +123,8 @@ int BaseRpcHttpPacket::parseJsonBody(const std::string& content)
     if ( status ) 
 	{
 		return pccl::STATE_SUCCESS;
-    }	
-
+    }
+	
 	return pccl::STATE_ERROR;
 	
 }
@@ -149,6 +164,12 @@ REQUEST_PARAMS& 		BaseRpcHttpPacket::getParams(void)
 Json::Value& 		    BaseRpcHttpPacket::getDocument(void)    
 {
 	return _document;
+}
+
+
+int 					BaseRpcHttpPacket::getMethod(void)
+{
+	return _method;
 }
 
 

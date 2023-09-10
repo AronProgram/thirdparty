@@ -28,3 +28,42 @@
 [submodule "tinyxml2"]
 	path = tinyxml2
 	url = https://github.com/leethomason/tinyxml2.git
+[submodule "log4cplus"]
+	path = log4cplus
+	url = https://github.com/log4cplus/log4cplus.git
+[submodule "libconfig"]
+	path = libconfig
+	url = https://github.com/hyperrealm/libconfig.git
+[submodule "jwt-cpp"]
+	path = jwt-cpp
+	url = https://github.com/Thalhammer/jwt-cpp.git
+[submodule "json"]
+	path = json
+	url = https://github.com/nlohmann/json.git
+[submodule "uWebSockets"]
+	path = uWebSockets
+	url = https://github.com/uNetworking/uWebSockets.git
+[submodule "nedmalloc"]
+	path = nedmalloc
+	url = https://github.com/ned14/nedmalloc.git
+[submodule "jemalloc"]
+	path = jemalloc
+	url = https://github.com/jemalloc/jemalloc.git
+[submodule "concurrentqueue"]
+	path = concurrentqueue
+	url = https://github.com/cameron314/concurrentqueue.git
+[submodule "nanomsg"]
+	path = nanomsg
+	url = https://github.com/nanomsg/nanomsg.git
+[submodule "sonic-cpp"]
+	path = sonic-cpp
+	url = https://github.com/bytedance/sonic-cpp.git
+[submodule "libhv"]
+	path = libhv
+	url = https://github.com/ithewei/libhv.git
+[submodule "cppkafka"]
+	path = cppkafka
+	url = https://github.com/mfontanini/cppkafka.git
+[submodule "poco"]
+	path = poco
+	url = https://github.com/pocoproject/poco.git

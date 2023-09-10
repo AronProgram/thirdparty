@@ -18,8 +18,8 @@
 
 
 #include "BaseRpcController.h"
-#include "BaseRpcRouteFactory.h"
 #include "BaseRpcApiHandler.h"
+#include "BaseRpcRouteFactory.h"
 #include <string>
 #include <memory>
 
@@ -68,7 +68,14 @@ protected:
 	*
 	* 初始化错误码
 	*/	
-	virtual void initErrorCode(void) override;
+	virtual void initError(void) override;
+
+
+	/**
+	*
+	* 输出结果
+	*/	
+	virtual void doOutput(void) override;
 	 
 
 	
@@ -141,7 +148,14 @@ void BaseRpcApiController<RpcPacket>::initRoute(void)
 }
 
 template<typename RpcPacket >	
-void BaseRpcApiController<RpcPacket>::initErrorCode(void) 
+void BaseRpcApiController<RpcPacket>::initError(void) 
+{
+	
+}
+
+
+template<typename RpcPacket >	
+void BaseRpcApiController<RpcPacket>::doOutput(void) 
 {
 	
 }
@@ -170,17 +184,14 @@ void	BaseRpcApiController<RpcPacket>::regiterRoute(const std::string& sApi,BaseR
 template<typename RpcPacket >
 int BaseRpcApiController<RpcPacket>::handle(void)	
 {
-
 	int result = pccl::STATE_SUCCESS;
 
 	//获取的api handler
 	BaseRpcApiHandler<RpcPacket>*		pHandler  = _factory.createHandler( this->getRoute() );
-	
 
 	//处理前准备
 	pHandler->reset();
 	pHandler->setBasePointer(this);
-	pHandler->setSequence( this->getSequence() );
 
 	//逻辑处理
 	result = pHandler->doProcessApi();		
