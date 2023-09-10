@@ -31,7 +31,7 @@ class BaseRpcPacket
 
 public:
 	BaseRpcPacket();
-	~BaseRpcPacket();
+	virtual ~BaseRpcPacket();
 
 public:
 	virtual void                    reset()                  = 0;
