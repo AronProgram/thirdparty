@@ -67,3 +67,6 @@
 [submodule "poco"]
 	path = poco
 	url = https://github.com/pocoproject/poco.git
+[submodule "QuantLib"]
+	path = QuantLib
+	url = https://github.com/lballabio/QuantLib.git
