@@ -293,7 +293,15 @@ void  BaseRpcRequestParams<RpcPacket>::dumpParams(void)
 	TLOGDEBUG( "dumpParams, " << _sequence << std::endl );
 	for( auto it = _params.begin(); it != _params.end(); it++ )
 	{
-		TLOGDEBUG( "dumpParams, " << _sequence << ", key:" <<it->first << ",value:" << it->second << std::endl);
+		if ( it->first == "Body" )
+		{
+			TLOGDEBUG( "dumpParams, " << _sequence << ", key:" <<it->first << ",value:" << it->second.length() << std::endl);
+		}
+		else
+		{
+			TLOGDEBUG( "dumpParams, " << _sequence << ", key:" <<it->first << ",value:" << it->second << std::endl);
+		}
+		
 	}
 	
 	
