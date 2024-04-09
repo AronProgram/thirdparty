@@ -79,3 +79,6 @@
 [submodule "ta-lib"]
 	path = ta-lib
 	url = https://github.com/TA-Lib/ta-lib.git
+[submodule "eventpp"]
+	path = eventpp
+	url = https://github.com/wqking/eventpp.git
