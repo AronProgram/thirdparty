@@ -8,6 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_library(pccl_logicrpc STATIC ${GLOBAL_SOURCES} )
 
 include_directories("." 
+                    "./protocol/websocket" 
 					"/usr/local/tars/cpp/include"
 					"/usr/local/include/json"
 					)
