@@ -384,12 +384,12 @@ template<typename RpcPacket >
 int  BaseWebsocketApiHandler<RpcPacket>::send(const std::string& message, OpCode opCode , bool compress , bool fin ) 
 {
    
-	std::size_t messageFrameSize = messageFrameSize( message.length() ); 
+	std::size_t frameSize = messageFrameSize( message.length() ); 
 
-	char * sendBuffer = static_cast<char*>( je_malloc( messageFrameSize ) );
+	char * sendBuffer = static_cast<char*>( je_malloc( frameSize ) );
 	
 	formatMessage<true>( sendBuffer, message.data(), message.length(), opCode, message.length(), compress, fin );
-	BaseRpcApiHandler<RpcPacket>::sendClient( (const char*) sendBuffer,messageFrameSize );
+	BaseRpcApiHandler<RpcPacket>::sendClient( (const char*) sendBuffer,frameSize );
 
 	je_free(sendBuffer);
 
