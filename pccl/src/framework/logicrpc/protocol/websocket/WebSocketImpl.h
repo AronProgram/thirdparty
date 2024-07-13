@@ -129,31 +129,31 @@ struct WebsocketImpl {
 		switch (opCode)
 		{
 			case pccl::protocol::websocket::TEXT:
-				route = WEBSOKET_PTOTOCOL_TEXT_ROUTE;
+				route = WEBSOCKET_PTOTOCOL_TEXT_ROUTE;
 				break;
 			
 			case pccl::protocol::websocket::BINARY:
-				route = WEBSOKET_PTOTOCOL_BINARY_ROUTE;
+				route = WEBSOCKET_PTOTOCOL_BINARY_ROUTE;
 				break;
 			
 			case pccl::protocol::websocket::CLOSE:
-				route = WEBSOKET_PTOTOCOL_CLOSE_ROUTE;
+				route = WEBSOCKET_PTOTOCOL_CLOSE_ROUTE;
 				break;
 			
 			case pccl::protocol::websocket::PING:
-				route = WEBSOKET_PTOTOCOL_PING_ROUTE;
+				route = WEBSOCKET_PTOTOCOL_PING_ROUTE;
 				break;
 			
 			case pccl::protocol::websocket::PONG:
-				route = WEBSOKET_PTOTOCOL_PONG_ROUTE;
+				route = WEBSOCKET_PTOTOCOL_PONG_ROUTE;
 				break;
 			
 			case pccl::protocol::websocket::REFUSE:
-				route = WEBSOKET_PTOTOCOL_REFUSE_ROUTE;
+				route = WEBSOCKET_PTOTOCOL_REFUSE_ROUTE;
 				break;
 
 			default:
-				route = WEBSOKET_PTOTOCOL_EMPTY_ROUTE;
+				route = WEBSOCKET_PTOTOCOL_EMPTY_ROUTE;
 				break;
 				
 		}

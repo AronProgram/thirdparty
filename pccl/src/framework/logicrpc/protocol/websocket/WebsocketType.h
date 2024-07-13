@@ -26,17 +26,17 @@ namespace pccl::protocol::websocket
 /////////////////////////////////////////////////////////////////////////
 
 //// websocket 魔法数
-const std::string  WEBSOKET_PTOTOCOL_MAGIC                    = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+const std::string  WEBSOCKET_PTOTOCOL_MAGIC                    = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 
 //// websocket 协议路由
-const std::string  WEBSOKET_PTOTOCOL_CONTINUATION_ROUTE       = "continuationHandle";
-const std::string  WEBSOKET_PTOTOCOL_TEXT_ROUTE		          = "textHandle";
-const std::string  WEBSOKET_PTOTOCOL_BINARY_ROUTE		      = "binaryHandle";
-const std::string  WEBSOKET_PTOTOCOL_CLOSE_ROUTE		      = "closeHandle";
-const std::string  WEBSOKET_PTOTOCOL_PING_ROUTE		          = "pingHandle";
-const std::string  WEBSOKET_PTOTOCOL_PONG_ROUTE		          = "popngHandle";
-const std::string  WEBSOKET_PTOTOCOL_REFUSE_ROUTE		      = "refuseHandle";
-const std::string  WEBSOKET_PTOTOCOL_EMPTY_ROUTE		      = "emptyHandle";
+const std::string  WEBSOCKET_PTOTOCOL_CONTINUATION_ROUTE       = "continuationHandle";
+const std::string  WEBSOCKET_PTOTOCOL_TEXT_ROUTE		       = "textHandle";
+const std::string  WEBSOCKET_PTOTOCOL_BINARY_ROUTE		       = "binaryHandle";
+const std::string  WEBSOCKET_PTOTOCOL_CLOSE_ROUTE		       = "closeHandle";
+const std::string  WEBSOCKET_PTOTOCOL_PING_ROUTE		       = "pingHandle";
+const std::string  WEBSOCKET_PTOTOCOL_PONG_ROUTE		       = "popngHandle";
+const std::string  WEBSOCKET_PTOTOCOL_REFUSE_ROUTE		       = "refuseHandle";
+const std::string  WEBSOCKET_PTOTOCOL_EMPTY_ROUTE		       = "emptyHandle";
 
 
 }
