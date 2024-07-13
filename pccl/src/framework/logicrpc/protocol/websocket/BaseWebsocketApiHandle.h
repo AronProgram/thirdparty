@@ -97,7 +97,7 @@ protected:
 	virtual int  sendFirstFragment(const std::string& message, OpCode opCode = OpCode::TEXT, bool compress = false);
 	virtual int  sendFragment(const std::string& message, bool compress = false);
 	virtual int  sendLastFragment(const std::string& message, bool compress = false);
-	virtual int  send(const std::string& message, pccl::OpCode opCode = pccl::OpCode::TEXT, bool compress = false, bool fin = true); 
+	virtual int  send(const std::string& message, OpCode opCode = OpCode::TEXT, bool compress = false, bool fin = true); 
 
 	
 	/**
@@ -203,13 +203,13 @@ void   BaseWebsocketApiHandler<RpcPacket>::handshake(const std::string& wsAccept
 template<typename RpcPacket >
 void BaseWebsocketApiHandler<RpcPacket>::pong(const std::string& sMsg )
 {
-	BaseWebsocketApiHandler<RpcPacket>::send(sMsg,pccl::OpCode::PONG,false, true );
+	BaseWebsocketApiHandler<RpcPacket>::send(sMsg,OpCode::PONG,false, true );
 }
 
 template<typename RpcPacket >
 void BaseWebsocketApiHandler<RpcPacket>::ping(const std::string& sMsg )
 {
-	BaseWebsocketApiHandler<RpcPacket>::send(sMsg,pccl::OpCode::PING,false, true );
+	BaseWebsocketApiHandler<RpcPacket>::send(sMsg,OpCode::PING,false, true );
 }
 
 
@@ -217,7 +217,7 @@ void BaseWebsocketApiHandler<RpcPacket>::ping(const std::string& sMsg )
 template<typename RpcPacket > 
 void   BaseWebsocketApiHandler<RpcPacket>::success(const std::string& data , bool fin)
 {
-	BaseWebsocketApiHandler<RpcPacket>::send(data,pccl::OpCode::TEXT,false, fin );
+	BaseWebsocketApiHandler<RpcPacket>::send(data,OpCode::TEXT,false, fin );
 }
 
 
@@ -225,14 +225,14 @@ template<typename RpcPacket >
 void   BaseWebsocketApiHandler<RpcPacket>::success(const Json::Value& data , const std::string& aid ,  bool fin)
 {	
 	std::string sBody  = BaseWebsocketApiHandler<RpcPacket>::serialize(data, aid, pccl::STATE_SUCCESS, "");	
-	BaseWebsocketApiHandler<RpcPacket>::send(sBody,pccl::OpCode::TEXT,false, fin);
+	BaseWebsocketApiHandler<RpcPacket>::send(sBody,OpCode::TEXT,false, fin);
 }
 
 template<typename RpcPacket > 
 void BaseWebsocketApiHandler<RpcPacket>::failure( int code, const std::string&	message,  bool fin)
 {
 	std::string sBody  = BaseWebsocketApiHandler<RpcPacket>::serialize(std::string(""), code, message);	
-	BaseWebsocketApiHandler<RpcPacket>::send(sBody,pccl::OpCode::TEXT,false, fin);
+	BaseWebsocketApiHandler<RpcPacket>::send(sBody,OpCode::TEXT,false, fin);
 }
 
 
@@ -240,7 +240,7 @@ template<typename RpcPacket >
 void BaseWebsocketApiHandler<RpcPacket>::failure( const Json::Value& data,int code, const std::string&	message,  bool fin)
 {
 	std::string sBody  = BaseWebsocketApiHandler<RpcPacket>::serialize(data, code, message);	
-	BaseWebsocketApiHandler<RpcPacket>::send(sBody,pccl::OpCode::TEXT,false, fin);
+	BaseWebsocketApiHandler<RpcPacket>::send(sBody,OpCode::TEXT,false, fin);
 }
 
 
@@ -370,7 +370,7 @@ void  BaseWebsocketApiHandler<RpcPacket>::end(int code, const std::string& messa
 	   std::size_t      length            = std::min<size_t>( MAX_CLOSE_PAYLOAD, message.length() );
 	   
 	   char closePayload[MAX_CLOSE_PAYLOAD + 2];	   
-	   protocol::formatClosePayload(closePayload, (uint16_t) code, message.c_str(), length);
+	   formatClosePayload(closePayload, (uint16_t) code, message.c_str(), length);
 
 	   // send close frame
 	   BaseWebsocketApiHandler<RpcPacket>::send( message, OpCode::CONTINUATION );  
@@ -381,14 +381,14 @@ void  BaseWebsocketApiHandler<RpcPacket>::end(int code, const std::string& messa
 
 
 template<typename RpcPacket > 
-int  BaseWebsocketApiHandler<RpcPacket>::send(const std::string& message, pccl::OpCode opCode , bool compress , bool fin ) 
+int  BaseWebsocketApiHandler<RpcPacket>::send(const std::string& message, OpCode opCode , bool compress , bool fin ) 
 {
    
-	std::size_t messageFrameSize = protocol::messageFrameSize( message.length() ); 
+	std::size_t messageFrameSize = messageFrameSize( message.length() ); 
 
 	char * sendBuffer = static_cast<char*>( je_malloc( messageFrameSize ) );
 	
-	pccl::protocol::formatMessage<true>( sendBuffer, message.data(), message.length(), opCode, message.length(), compress, fin );
+	formatMessage<true>( sendBuffer, message.data(), message.length(), opCode, message.length(), compress, fin );
 	BaseRpcApiHandler<RpcPacket>::sendClient( (const char*) sendBuffer,messageFrameSize );
 
 	je_free(sendBuffer);
