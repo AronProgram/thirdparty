@@ -1,0 +1,122 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  pypi:
+    name: Publish to PyPI
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Poetry Setup
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: 1.2
+
+      - name: Publish to PyPI
+        env:
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          poetry publish --build -n --username __token__ --password "$PYPI_TOKEN"
+
+  release:
+    name: GitHub Release
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Build tools
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y build-essential cmake
+
+      - name: Setup Python
+        run: |
+          sudo apt-get install -y python3 python3-pip python-is-python3
+
+      - name: Poetry Setup
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: 1.2
+
+      # Poetry cache with default ~.cache/pypoetry directory.
+      # Update it when `poetry.lock` file changed.
+      - name: Cache Poetry
+        id: cache-poetry
+        uses: actions/cache@v2.1.5
+        with:
+          path: ~/.cache/pypoetry
+          key: ubuntu-22.04-poetry-${{ hashFiles('**/poetry.lock') }}
+
+      #----------------------------------------------
+      # install dependencies if cache does not exist
+      #----------------------------------------------
+      - name: Install dependencies
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: |
+          sudo apt install -y gnome-keyring
+          pip3 install --upgrade requests
+          poetry install --no-interaction --no-root
+
+      #----------------------------------------------
+      # install your root project, if required
+      #----------------------------------------------
+      - name: Install library
+        run: poetry install --no-interaction
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+
+      - name: Build TDengine
+        run: |
+          git clone --depth 1 https://github.com/taosdata/TDengine.git -b 2.4
+          cd TDengine
+          git submodule update --depth 1 --init --recursive
+          mkdir build
+          cd build
+          cmake ../ -DBUILD_HTTP=false -DBUILD_DEPENDENCY_TESTS=false -DBUILD_JDBC=false -DCMAKE_INSTALL_PREFIX:PATH=`realpath ../../local/`
+          make -j
+          cd ../../
+
+      - name: Start TDengine
+        run: |
+          tree TDengine/build/build/
+          export C_INCLUDE_PATH=$PWD/TDengine/build/build/bin
+          export LD_LIBRARY_PATH=$PWD/TDengine/build/build/lib
+          mkdir -p /tmp/taos/
+          printf "dataDir /tmp/taos\nlogDir /tmp/taos/\n" > /tmp/taos/taos.cfg
+          ./TDengine/build/build/bin/taosadapter &
+          ./TDengine/build/build/bin/taosd -c /tmp/taos/ &
+
+      #----------------------------------------------
+      #              run test suite
+      #----------------------------------------------
+      - name: Test
+        run: |
+          export LD_LIBRARY_PATH=$PWD/TDengine/build/build/lib
+          export TDENGINE_URL=localhost:6041
+          poetry run pip install psutil pandas "numpy<2.0.0"
+          poetry run pytest tests
+      - name: Build Artifacts
+        run: |
+          poetry build
+
+      - name: Generate Changelog
+        run: |
+          ./ci/extract-changelog.sh > ${{ github.workflow }}-CHANGELOG.txt
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          body_path: ${{ github.workflow }}-CHANGELOG.txt
+          files: |
+            dist/*
